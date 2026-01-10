@@ -8,7 +8,7 @@ const PORT = process.env.SERVER_PORT || 5001;
 
 app.use(corsMiddleware);
 app.use(express.json());
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("<h1>Backend Running Successfully 🚀</h1>");

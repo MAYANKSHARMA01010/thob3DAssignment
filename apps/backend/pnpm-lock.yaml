@@ -27,7 +27,7 @@ importers:
         specifier: ^9.0.3
         version: 9.0.3
       prisma:
-        specifier: '6'
+        specifier: ^6.19.1
         version: 6.19.1
     devDependencies:
       nodemon:

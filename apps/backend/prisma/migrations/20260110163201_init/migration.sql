@@ -11,7 +11,6 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -25,7 +24,6 @@ CREATE TABLE "Product" (
     "description" TEXT,
     "price" DECIMAL(10,2) NOT NULL,
     "stockQuantity" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isVisible" BOOLEAN NOT NULL DEFAULT true,
     "createdById" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

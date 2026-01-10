@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -27,11 +26,8 @@ model User {
   email     String    @unique
   password  String
   role      Role      @default(USER)
-  isActive  Boolean   @default(true)
-
   products  Product[]
   orders    Order[]
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -42,30 +38,21 @@ model Product {
   description    String?
   price          Decimal    @db.Decimal(10, 2)
   stockQuantity  Int
-
-  isActive       Boolean    @default(true)
   isVisible      Boolean    @default(true)
-
   createdById    String
   createdBy      User       @relation(fields: [createdById], references: [id])
-
   orderItems     OrderItem[]
-
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
-
 
 model Order {
   id           String        @id @default(uuid())
   userId       String
   user         User          @relation(fields: [userId], references: [id])
-
   totalAmount  Decimal       @db.Decimal(10, 2)
   status       OrderStatus   @default(PENDING)
-
   orderItems   OrderItem[]
-
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -74,10 +61,8 @@ model OrderItem {
   id              String   @id @default(uuid())
   orderId         String
   productId       String
-
   quantity        Int
   priceAtPurchase Decimal  @db.Decimal(10, 2)
-
   order           Order    @relation(fields: [orderId], references: [id])
   product         Product  @relation(fields: [productId], references: [id])
 }

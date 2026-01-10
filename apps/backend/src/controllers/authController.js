@@ -1,6 +1,7 @@
 const { prisma } = require("../configs/db");
 const bcrypt = require("bcrypt");
 const { createToken } = require("../utils/auth");
+const { get } = require("http");
 
 async function createUserController(req, res) {
     try {
@@ -49,12 +50,6 @@ async function loginUserController(req, res) {
         const user = req.existingUser;
         const { password } = req.body;
 
-        if (!user.isActive) {
-            return res.status(403).json({
-                ERROR: "User account is inactive",
-            });
-        }
-
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({
@@ -84,7 +79,39 @@ async function loginUserController(req, res) {
     }
 }
 
+async function getMeController(req, res) {
+    try {
+        const userId = req.user.id;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                ERROR: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            user,
+        });
+    } catch (err) {
+        console.error("GET ME ERROR:", err);
+        return res.status(500).json({
+            ERROR: "Failed to fetch user",
+        });
+    }
+}
+
 module.exports = {
     createUserController,
     loginUserController,
+    getMeController,
 };

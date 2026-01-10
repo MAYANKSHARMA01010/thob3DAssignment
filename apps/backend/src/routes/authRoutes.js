@@ -13,7 +13,12 @@ const {
 const {
     createUserController,
     loginUserController,
+    getMeController,
 } = require("../controllers/authController");
+
+const { 
+    authenticate 
+} = require("../utils/auth");
 
 authRouter.post(
     "/register",
@@ -27,6 +32,12 @@ authRouter.post(
     loginUserMiddleware,
     checkUserExists,
     loginUserController
+);
+
+authRouter.get(
+    "/me", 
+    authenticate, 
+    getMeController
 );
 
 module.exports = authRouter;

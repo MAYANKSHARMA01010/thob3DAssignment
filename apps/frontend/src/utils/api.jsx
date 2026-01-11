@@ -120,3 +120,13 @@ export const orderAPI = {
     placeOrder: () => api.post("/orders/place"),
     getMyOrders: () => api.get("/orders/my"),
 };
+
+export const adminUsersAPI = {
+    getAllUsers: () => api.get("/admin/users"),
+};
+
+export const adminOrdersAPI = {
+    getAllOrders: () => api.get("/admin/orders"),
+    updateOrderStatus: (orderId, status) =>
+        api.patch(`/admin/orders/${orderId}/status`, { status }),
+};

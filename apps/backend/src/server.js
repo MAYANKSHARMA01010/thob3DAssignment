@@ -6,6 +6,8 @@ const userStatsRouter = require("./routes/user.stats.routes");
 const adminStatsRouter = require("./routes/admin.stats.routes");
 const cartRouter = require("./routes/cartRoutes");
 const orderRouter = require("./routes/orderRoutes");
+const adminUsersRouter = require("./routes/adminUsersRoutes");
+const adminOrdersRouter = require("./routes/adminOrdersRoutes");
 require("dotenv").config();
 
 const app = express();
@@ -19,6 +21,8 @@ app.use('/api/user', userStatsRouter);
 app.use('/api/admin', adminStatsRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/orders', orderRouter)
+app.use("/api/admin/users", adminUsersRouter);
+app.use("/api/admin/orders", adminOrdersRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("<h1>Backend Running Successfully 🚀</h1>");

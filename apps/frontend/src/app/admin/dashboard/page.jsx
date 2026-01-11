@@ -55,7 +55,12 @@ export default function AdminDashboard() {
                     <ActionCard title="Manage Users" icon={<Users />} href="/admin/users" />
                     <ActionCard title="Manage Products" icon={<Package />} href="/admin/products" />
                     <ActionCard title="View Orders" icon={<ClipboardList />} href="/admin/orders" />
-                    <ActionCard title="Add Product" icon={<PlusCircle />} href="/admin/products/new" />
+
+                    <ActionCard
+                        title="Add Product"
+                        icon={<PlusCircle />}
+                        href="/admin/products?create=true"
+                    />
                 </div>
             </div>
         </div>

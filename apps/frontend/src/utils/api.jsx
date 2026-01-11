@@ -115,3 +115,8 @@ export const userStatsAPI = {
 export const adminStatsAPI = {
     getStats: () => api.get("/admin/stats"),
 };
+
+export const orderAPI = {
+    placeOrder: () => api.post("/orders/place"),
+    getMyOrders: () => api.get("/orders/my"),
+};

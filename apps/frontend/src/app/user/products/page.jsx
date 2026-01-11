@@ -28,7 +28,12 @@ export default function UserProductsPage() {
     const [inStockOnly, setInStockOnly] = useState(false);
     const [priceRange, setPriceRange] = useState("ALL");
 
-    const { addToCart } = useCart();
+    const {
+        cart,
+        addToCart,
+        increaseQty,
+        decreaseQty,
+    } = useCart();
 
     useEffect(() => {
         setLoading(true);
@@ -58,6 +63,9 @@ export default function UserProductsPage() {
         });
     }, [products, category, inStockOnly, priceRange]);
 
+    const getCartItem = (productId) =>
+        cart.find((item) => item.id === productId);
+
     if (loading) {
         return (
             <p className="text-gray-400 text-center py-16">
@@ -67,7 +75,7 @@ export default function UserProductsPage() {
     }
 
     return (
-        <div className="bg-black text-white min-h-screen px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="bg-black text-white min-h-screen px-4 pb-20">
             <div className="py-10">
                 <h1 className="text-3xl font-bold">Products</h1>
                 <p className="text-gray-400 mt-1">
@@ -80,19 +88,17 @@ export default function UserProductsPage() {
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2 text-sm text-white"
+                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2"
                     >
                         {CATEGORIES.map((c) => (
-                            <option key={c} value={c}>
-                                {c}
-                            </option>
+                            <option key={c}>{c}</option>
                         ))}
                     </select>
 
                     <select
                         value={priceRange}
                         onChange={(e) => setPriceRange(e.target.value)}
-                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2 text-sm text-white"
+                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2"
                     >
                         <option value="ALL">All Prices</option>
                         <option value="LOW">Under ₹500</option>
@@ -100,105 +106,121 @@ export default function UserProductsPage() {
                         <option value="HIGH">Above ₹2000</option>
                     </select>
 
-                    <label className="flex items-center gap-2 text-sm text-gray-300">
+                    <label className="flex items-center gap-2">
                         <input
                             type="checkbox"
                             checked={inStockOnly}
                             onChange={(e) =>
                                 setInStockOnly(e.target.checked)
                             }
-                            className="accent-white"
                         />
                         In stock only
                     </label>
                 </div>
             </div>
 
-            {filteredProducts.length === 0 ? (
-                <p className="text-gray-400">
-                    No products match your filters.
-                </p>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                className="border border-gray-800 rounded-xl p-5 bg-[#0c0c0c] hover:border-gray-700 transition flex flex-col"
-                            >
-                                <Link
-                                    href={`/user/products/${product.id}`}
-                                    className="flex flex-col gap-4"
-                                >
-                                    <div className="w-full h-60 bg-[#111] rounded-lg flex items-center justify-center overflow-hidden">
-                                        <img
-                                            src={product.imageUrl}
-                                            alt={product.name}
-                                            className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
-                                            loading="lazy"
-                                        />
-                                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProducts.map((product) => {
+                    const cartItem = getCartItem(product.id);
 
-                                    <div>
-                                        <h3 className="font-medium text-lg line-clamp-1">
-                                            {product.name}
-                                        </h3>
-                                        <p className="text-sm text-gray-400 line-clamp-2 mt-1">
-                                            {product.description}
-                                        </p>
-                                        <p className="font-semibold text-xl mt-2">
-                                            ₹{product.price}
-                                        </p>
-                                    </div>
-                                </Link>
+                    return (
+                        <div
+                            key={product.id}
+                            className="border border-gray-800 p-5 flex flex-col bg-[#0c0c0c]"
+                        >
+                            <Link href={`/user/products/${product.id}`}>
+                                <img
+                                    src={product.imageUrl}
+                                    className="h-60 object-contain mx-auto"
+                                />
+                            </Link>
 
+                            <h3 className="font-semibold mt-4">
+                                {product.name}
+                            </h3>
+
+                            <p className="text-gray-400 text-sm mt-1">
+                                {product.description}
+                            </p>
+
+                            <p className="text-xl font-bold mt-2">
+                                ₹{product.price}
+                            </p>
+
+                            {!cartItem ? (
                                 <button
+                                    disabled={product.stockQuantity === 0}
                                     onClick={() =>
                                         addToCart(
                                             {
                                                 id: product.id,
                                                 name: product.name,
-                                                price: product.price,
+                                                price: Number(product.price),
                                                 image: product.imageUrl,
                                                 stock: product.stockQuantity,
                                             },
                                             1
                                         )
                                     }
-                                    disabled={product.stockQuantity === 0}
-                                    className="mt-5 bg-white text-black py-2.5 text-sm font-semibold rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="mt-5 bg-white text-black py-2 font-semibold disabled:opacity-50"
                                 >
                                     {product.stockQuantity === 0
                                         ? "Out of Stock"
                                         : "Add to Cart"}
                                 </button>
-                            </div>
-                        ))}
-                    </div>
+                            ) : (
+                                <div className="mt-5 flex items-center justify-between border border-gray-700 px-3 py-2">
+                                    <button
+                                        onClick={() =>
+                                            decreaseQty(product.id)
+                                        }
+                                        className="px-3 text-lg"
+                                    >
+                                        −
+                                    </button>
 
-                    <div className="flex items-center justify-center gap-6 pt-12">
-                        <button
-                            disabled={page === 1}
-                            onClick={() => setPage((p) => p - 1)}
-                            className="border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40"
-                        >
-                            Previous
-                        </button>
+                                    <span className="font-semibold">
+                                        {cartItem.quantity}
+                                    </span>
 
-                        <span className="text-sm text-gray-400">
-                            Page {page} of {totalPages}
-                        </span>
+                                    <button
+                                        onClick={() =>
+                                            increaseQty(product.id)
+                                        }
+                                        disabled={
+                                            cartItem.quantity >=
+                                            product.stockQuantity
+                                        }
+                                        className="px-3 text-lg disabled:opacity-40"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
 
-                        <button
-                            disabled={page === totalPages}
-                            onClick={() => setPage((p) => p + 1)}
-                            className="border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40"
-                        >
-                            Next
-                        </button>
-                    </div>
-                </>
-            )}
+            <div className="flex justify-center gap-6 pt-12">
+                <button
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                >
+                    Previous
+                </button>
+
+                <span>
+                    Page {page} of {totalPages}
+                </span>
+
+                <button
+                    disabled={page === totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }

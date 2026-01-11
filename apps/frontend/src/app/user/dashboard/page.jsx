@@ -28,10 +28,10 @@ export default function UserDashboard() {
     }, []);
 
     const actions = [
-        { title: "Browse Products", icon: <ShoppingBag />, href: "/products" },
-        { title: "My Cart", icon: <ShoppingCart />, href: "/cart" },
-        { title: "My Orders", icon: <Package />, href: "/orders" },
-        { title: "My Profile", icon: <User />, href: "/profile" },
+        { title: "Browse Products", icon: <ShoppingBag />, href: "/user/products" },
+        { title: "My Cart", icon: <ShoppingCart />, href: "/user/cart" },
+        { title: "My Orders", icon: <Package />, href: "/user/orders" },
+        { title: "My Profile", icon: <User />, href: "/user/profile" },
     ];
 
     return (

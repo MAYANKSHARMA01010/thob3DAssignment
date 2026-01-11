@@ -1,22 +1,37 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { productAPI } from "@/utils/api";
 import { useCart } from "@/context/CartContext";
 
+const CATEGORIES = [
+    "ALL",
+    "BOOKS",
+    "CLOTHING",
+    "ELECTRONICS",
+    "ACCESSORIES",
+    "FOOTWEAR",
+    "HOME",
+    "STATIONERY",
+];
+
 export default function UserProductsPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+
+    const [category, setCategory] = useState("ALL");
+    const [inStockOnly, setInStockOnly] = useState(false);
+    const [priceRange, setPriceRange] = useState("ALL");
 
     const { addToCart } = useCart();
 
     useEffect(() => {
         setLoading(true);
-
         productAPI
             .getProducts(page, 18)
             .then((res) => {
@@ -26,71 +41,117 @@ export default function UserProductsPage() {
             .finally(() => setLoading(false));
     }, [page]);
 
+    const filteredProducts = useMemo(() => {
+        return products.filter((p) => {
+            if (category !== "ALL" && p.category !== category) return false;
+            if (inStockOnly && p.stockQuantity === 0) return false;
+
+            if (priceRange !== "ALL") {
+                const price = Number(p.price);
+                if (priceRange === "LOW" && price > 500) return false;
+                if (priceRange === "MID" && (price < 500 || price > 2000))
+                    return false;
+                if (priceRange === "HIGH" && price < 2000) return false;
+            }
+
+            return true;
+        });
+    }, [products, category, inStockOnly, priceRange]);
+
     if (loading) {
         return (
-            <p className="text-gray-400 text-center py-10">
+            <p className="text-gray-400 text-center py-16">
                 Loading products...
             </p>
         );
     }
 
     return (
-        <div className="space-y-10 bg-black text-white min-h-screen">
-            {/* HEADER */}
-            <div>
-                <h1 className="text-3xl font-bold text-white">
-                    Products
-                </h1>
+        <div className="bg-black text-white min-h-screen px-4 sm:px-6 lg:px-8 pb-20">
+            <div className="py-10">
+                <h1 className="text-3xl font-bold">Products</h1>
                 <p className="text-gray-400 mt-1">
-                    Browse available products
+                    Discover what fits your needs
                 </p>
             </div>
 
-            {products.length === 0 ? (
+            <div className="sticky top-0 z-10 bg-black border-b border-gray-800 py-4 mb-8">
+                <div className="flex flex-wrap gap-4">
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2 text-sm text-white"
+                    >
+                        {CATEGORIES.map((c) => (
+                            <option key={c} value={c}>
+                                {c}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={priceRange}
+                        onChange={(e) => setPriceRange(e.target.value)}
+                        className="bg-[#0f0f0f] border border-gray-800 px-3 py-2 text-sm text-white"
+                    >
+                        <option value="ALL">All Prices</option>
+                        <option value="LOW">Under ₹500</option>
+                        <option value="MID">₹500 – ₹2000</option>
+                        <option value="HIGH">Above ₹2000</option>
+                    </select>
+
+                    <label className="flex items-center gap-2 text-sm text-gray-300">
+                        <input
+                            type="checkbox"
+                            checked={inStockOnly}
+                            onChange={(e) =>
+                                setInStockOnly(e.target.checked)
+                            }
+                            className="accent-white"
+                        />
+                        In stock only
+                    </label>
+                </div>
+            </div>
+
+            {filteredProducts.length === 0 ? (
                 <p className="text-gray-400">
-                    No products available.
+                    No products match your filters.
                 </p>
             ) : (
                 <>
-                    {/* PRODUCTS GRID */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {products.map((product) => (
+                        {filteredProducts.map((product) => (
                             <div
                                 key={product.id}
-                                className="group border border-gray-800 rounded-xl p-5 bg-[#0b0b0b] hover:shadow-[0_0_20px_rgba(255,255,255,0.08)] transition flex flex-col"
+                                className="border border-gray-800 rounded-xl p-5 bg-[#0c0c0c] hover:border-gray-700 transition flex flex-col"
                             >
-                                {/* PRODUCT LINK */}
                                 <Link
                                     href={`/user/products/${product.id}`}
                                     className="flex flex-col gap-4"
                                 >
-                                    {/* IMAGE */}
-                                    <div className="w-full h-64 bg-[#111] rounded-lg flex items-center justify-center overflow-hidden">
+                                    <div className="w-full h-60 bg-[#111] rounded-lg flex items-center justify-center overflow-hidden">
                                         <img
                                             src={product.imageUrl}
                                             alt={product.name}
-                                            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                            className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
                                             loading="lazy"
                                         />
                                     </div>
 
-                                    {/* INFO */}
-                                    <div className="flex flex-col gap-1">
-                                        <h3 className="font-semibold text-lg text-white line-clamp-1">
+                                    <div>
+                                        <h3 className="font-medium text-lg line-clamp-1">
                                             {product.name}
                                         </h3>
-
-                                        <p className="text-sm text-gray-400 line-clamp-2">
+                                        <p className="text-sm text-gray-400 line-clamp-2 mt-1">
                                             {product.description}
                                         </p>
-
-                                        <p className="font-bold text-xl mt-1 text-white">
+                                        <p className="font-semibold text-xl mt-2">
                                             ₹{product.price}
                                         </p>
                                     </div>
                                 </Link>
 
-                                {/* ADD TO CART */}
                                 <button
                                     onClick={() =>
                                         addToCart(
@@ -105,7 +166,7 @@ export default function UserProductsPage() {
                                         )
                                     }
                                     disabled={product.stockQuantity === 0}
-                                    className="mt-4 bg-white text-black py-2.5 text-sm font-semibold rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="mt-5 bg-white text-black py-2.5 text-sm font-semibold rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {product.stockQuantity === 0
                                         ? "Out of Stock"
@@ -115,12 +176,11 @@ export default function UserProductsPage() {
                         ))}
                     </div>
 
-                    {/* PAGINATION */}
-                    <div className="flex items-center justify-center gap-4 pt-8">
+                    <div className="flex items-center justify-center gap-6 pt-12">
                         <button
                             disabled={page === 1}
                             onClick={() => setPage((p) => p - 1)}
-                            className="border border-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-gray-800 disabled:opacity-50"
+                            className="border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40"
                         >
                             Previous
                         </button>
@@ -132,7 +192,7 @@ export default function UserProductsPage() {
                         <button
                             disabled={page === totalPages}
                             onClick={() => setPage((p) => p + 1)}
-                            className="border border-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-gray-800 disabled:opacity-50"
+                            className="border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40"
                         >
                             Next
                         </button>

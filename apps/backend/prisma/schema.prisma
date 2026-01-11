@@ -36,45 +36,96 @@ model User {
   email     String    @unique
   password  String
   role      Role      @default(USER)
+
   products  Product[]
   orders    Order[]
+  cart      Cart?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id             String     @id @default(uuid())
+  id             String      @id @default(uuid())
   name           String
   description    String?
-  price          Decimal    @db.Decimal(10, 2)
+  price          Decimal     @db.Decimal(10, 2)
   imageUrl       String
   category       Category
   stockQuantity  Int
-  isVisible      Boolean    @default(true)
+  isVisible      Boolean     @default(true)
+
   createdById    String
-  createdBy      User       @relation(fields: [createdById], references: [id])
+  createdBy      User        @relation(fields: [createdById], references: [id])
+
   orderItems     OrderItem[]
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  cartItems      CartItem[]
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([category])
+  @@index([isVisible])
 }
 
 model Order {
   id           String        @id @default(uuid())
   userId       String
   user         User          @relation(fields: [userId], references: [id])
+
   totalAmount  Decimal       @db.Decimal(10, 2)
   status       OrderStatus   @default(PENDING)
+
   orderItems   OrderItem[]
+
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrderItem {
   id              String   @id @default(uuid())
+
   orderId         String
   productId       String
+
   quantity        Int
   priceAtPurchase Decimal  @db.Decimal(10, 2)
+
   order           Order    @relation(fields: [orderId], references: [id])
   product         Product  @relation(fields: [productId], references: [id])
+
+  createdAt       DateTime @default(now())
+
+  @@unique([orderId, productId])
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+
+  items     CartItem[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+
+  cartId   String
+  productId String
+  quantity Int
+
+  cart     Cart     @relation(fields: [cartId], references: [id])
+  product  Product  @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
 }

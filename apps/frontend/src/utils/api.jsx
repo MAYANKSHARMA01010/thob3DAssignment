@@ -5,8 +5,7 @@ export const getBaseUrl = () => {
     const backendUrl =
         process.env.NODE_ENV === "development"
             ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
-              process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL
 
     if (!backendUrl) return null;
 
@@ -100,4 +99,22 @@ export const productAPI = {
     deleteProduct: (id) => api.delete(`/products/${id}`),
     toggleVisibility: (id) =>
         api.patch(`/products/${id}/visibility`),
+};
+
+export const cartAPI = {
+    getCart: () => api.get("/cart"),
+    addToCart: (productId, quantity = 1) =>
+        api.post("/cart/add", { productId, quantity }),
+    updateCartItem: (productId, quantity) =>
+        api.put("/cart/update", { productId, quantity }),
+    removeFromCart: (productId) =>
+        api.delete(`/cart/remove/${productId}`),
+};
+
+export const userStatsAPI = {
+    getStats: () => api.get("/user/stats"),
+};
+
+export const adminStatsAPI = {
+    getStats: () => api.get("/admin/stats"),
 };

@@ -21,7 +21,7 @@ export default function Navbar() {
     const pathname = usePathname();
 
     const isActive = (path) =>
-        pathname === path
+        pathname.startsWith(path)
             ? "text-white"
             : "text-gray-400 hover:text-white";
 
@@ -63,8 +63,15 @@ export default function Navbar() {
                         <NavItem href="/admin/dashboard" icon={<LayoutDashboard size={16} />} label="Admin" active={isActive("/admin/dashboard")} />
                         <NavItem href="/admin/users" icon={<Users size={16} />} label="Users" active={isActive("/admin/users")} />
                         <NavItem href="/admin/products" icon={<ShoppingBag size={16} />} label="Products" active={isActive("/admin/products")} />
+
+                        <NavItem
+                            href="/admin/products?create=true"
+                            icon={<PlusCircle size={16} />}
+                            label="Add Product"
+                            active={isActive("/admin/products")}
+                        />
+
                         <NavItem href="/admin/orders" icon={<ClipboardList size={16} />} label="Orders" active={isActive("/admin/orders")} />
-                        <NavItem href="/admin/products/new" icon={<PlusCircle size={16} />} label="Add Product" active={isActive("/admin/products/new")} />
                     </>
                 )}
 

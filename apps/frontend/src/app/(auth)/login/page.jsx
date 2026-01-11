@@ -29,7 +29,7 @@ export default function Login() {
             router.push(
                 res.data.user.role === "ADMIN"
                     ? "/admin/dashboard"
-                    : "/dashboard"
+                    : "/user/dashboard"
             );
         } catch (err) {
             toast.error(err.response?.data?.ERROR || "Login failed");

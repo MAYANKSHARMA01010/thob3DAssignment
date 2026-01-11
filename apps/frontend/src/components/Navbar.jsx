@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-hot-toast";
 import {
     LayoutDashboard,
     ShoppingBag,
@@ -12,7 +13,7 @@ import {
     Users,
     PlusCircle,
     ClipboardList,
-    LogOut
+    LogOut,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -20,7 +21,14 @@ export default function Navbar() {
     const pathname = usePathname();
 
     const isActive = (path) =>
-        pathname === path ? "text-white" : "text-gray-400 hover:text-white";
+        pathname === path
+            ? "text-white"
+            : "text-gray-400 hover:text-white";
+
+    const handleLogout = () => {
+        toast.success("Logged out successfully");
+        logout();
+    };
 
     return (
         <nav className="bg-black text-white px-6 py-4 flex justify-between items-center">
@@ -64,7 +72,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-3 ml-4 border-l border-gray-700 pl-4">
                         <span className="text-gray-300">{user?.name}</span>
                         <button
-                            onClick={logout}
+                            onClick={handleLogout}
                             className="flex items-center gap-1 bg-red-600 px-3 py-1 rounded hover:bg-red-700 transition"
                         >
                             <LogOut size={14} />

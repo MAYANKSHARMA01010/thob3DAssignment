@@ -4,7 +4,6 @@ import { useState } from "react";
 import { authAPI } from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -31,7 +30,6 @@ export default function Login() {
 
     return (
         <>
-            <Navbar />
             <form
                 onSubmit={submit}
                 className="max-w-md mx-auto mt-20 p-6 border"

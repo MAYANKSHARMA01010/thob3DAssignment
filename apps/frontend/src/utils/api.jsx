@@ -5,10 +5,11 @@ export const getBaseUrl = () => {
         process.env.NODE_ENV === "development"
             ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
             : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
-            process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+              process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
     if (!backendUrl) {
-        throw new Error("❌ Backend URL not configured");
+        console.warn("⚠️ Backend URL not configured. API calls will fail.");
+        return null;
     }
 
     return `${backendUrl.replace(/\/$/, "")}/api`;
@@ -26,7 +27,7 @@ export const getToken = () => {
 };
 
 export const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: API_BASE_URL || "",
     headers: {
         "Content-Type": "application/json",
     },
@@ -66,11 +67,8 @@ api.interceptors.response.use(
 
 export const authAPI = {
     login: (data) => api.post("/auth/login", data),
-
     register: (data) => api.post("/auth/register", data),
-
     profile: () => api.get("/auth/me"),
-
     logout: () => {
         if (typeof window !== "undefined") {
             localStorage.removeItem("token");

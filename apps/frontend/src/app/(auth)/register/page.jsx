@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { authAPI } from "@/utils/api";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 
 export default function Register() {
     const router = useRouter();
@@ -27,7 +26,6 @@ export default function Register() {
 
     return (
         <>
-            <Navbar />
             <form
                 onSubmit={submit}
                 className="max-w-md mx-auto mt-20 p-6 border"

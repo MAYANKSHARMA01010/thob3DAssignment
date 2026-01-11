@@ -5,7 +5,8 @@ export const getBaseUrl = () => {
     const backendUrl =
         process.env.NODE_ENV === "development"
             ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL
+            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
+              process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
     if (!backendUrl) return null;
 
@@ -60,10 +61,8 @@ api.interceptors.response.use(
 
             if (!publicRoutes.includes(currentPath)) {
                 toast.error("Session expired. Please login again");
-
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
-
                 setTimeout(() => {
                     window.location.href = "/login";
                 }, 500);
@@ -81,11 +80,9 @@ export const authAPI = {
     register: (data) => api.post("/auth/register", data),
     profile: () => api.get("/auth/me"),
     logout: () => {
-        if (typeof window !== "undefined") {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
-        }
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
     },
 };
 

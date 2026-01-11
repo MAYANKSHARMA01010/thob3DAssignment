@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { userStatsAPI } from "@/utils/api";
 import {
     ShoppingBag,
     ShoppingCart,
@@ -11,32 +13,25 @@ import {
 
 export default function UserDashboard() {
     const { user } = useAuth();
+    const [stats, setStats] = useState({
+        orders: 0,
+        cartItems: 0,
+    });
+
+    useEffect(() => {
+        userStatsAPI.getStats().then((res) => {
+            setStats({
+                orders: res?.data?.totalOrders ?? 0,
+                cartItems: res?.data?.totalCartItems ?? 0,
+            });
+        });
+    }, []);
 
     const actions = [
-        {
-            title: "Browse Products",
-            description: "Explore all available products",
-            icon: <ShoppingBag className="h-6 w-6" />,
-            href: "/products",
-        },
-        {
-            title: "My Cart",
-            description: "View items added to your cart",
-            icon: <ShoppingCart className="h-6 w-6" />,
-            href: "/cart",
-        },
-        {
-            title: "My Orders",
-            description: "Track and manage your orders",
-            icon: <Package className="h-6 w-6" />,
-            href: "/orders",
-        },
-        {
-            title: "My Profile",
-            description: "Update personal information",
-            icon: <User className="h-6 w-6" />,
-            href: "/profile",
-        },
+        { title: "Browse Products", icon: <ShoppingBag />, href: "/products" },
+        { title: "My Cart", icon: <ShoppingCart />, href: "/cart" },
+        { title: "My Orders", icon: <Package />, href: "/orders" },
+        { title: "My Profile", icon: <User />, href: "/profile" },
     ];
 
     return (
@@ -51,56 +46,24 @@ export default function UserDashboard() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <StatCard title="Total Orders" value="12" />
-                <StatCard title="Cart Items" value="3" />
+                <StatCard title="Total Orders" value={stats.orders} />
+                <StatCard title="Cart Items" value={stats.cartItems} />
                 <StatCard title="Account Type" value="User" />
             </div>
 
-            <div>
-                <h2 className="text-xl font-semibold mb-4">
-                    Quick Actions
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {actions.map((action) => (
-                        <Link
-                            key={action.title}
-                            href={action.href}
-                            className="border rounded-lg p-5 hover:shadow-md transition group"
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-gray-100 rounded-lg group-hover:bg-black group-hover:text-white transition">
-                                    {action.icon}
-                                </div>
-
-                                <div>
-                                    <h3 className="font-semibold">
-                                        {action.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-600">
-                                        {action.description}
-                                    </p>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <h2 className="text-xl font-semibold mb-3">
-                    Recent Orders
-                </h2>
-
-                <div className="border rounded-lg p-4 text-gray-600">
-                    <p>No recent orders yet.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {actions.map((action) => (
                     <Link
-                        href="/products"
-                        className="text-black font-medium mt-2 inline-block"
+                        key={action.title}
+                        href={action.href}
+                        className="border rounded-lg p-5 hover:shadow-md transition flex items-center gap-4"
                     >
-                        Start Shopping →
+                        <div className="p-3 bg-gray-100 rounded-lg">
+                            {action.icon}
+                        </div>
+                        <h3 className="font-semibold">{action.title}</h3>
                     </Link>
-                </div>
+                ))}
             </div>
         </div>
     );

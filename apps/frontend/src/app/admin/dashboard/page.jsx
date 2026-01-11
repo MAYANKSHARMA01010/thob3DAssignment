@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api } from "@/utils/api";
+import { adminStatsAPI } from "@/utils/api";
 import {
     Users,
     Package,
@@ -15,32 +15,24 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState({
         users: 0,
         products: 0,
-        orders: 0
+        orders: 0,
     });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.get("/admin/stats")
+        adminStatsAPI
+            .getStats()
             .then((res) => {
                 setStats({
-                    users: res?.data?.users ?? 0,
-                    products: res?.data?.products ?? 0,
-                    orders: res?.data?.orders ?? 0
-                });
-            })
-            .catch(() => {
-                setStats({
-                    users: 0,
-                    products: 0,
-                    orders: 0
+                    users: res?.data?.totalUsers ?? 0,
+                    products: res?.data?.totalProducts ?? 0,
+                    orders: res?.data?.totalOrders ?? 0,
                 });
             })
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) {
-        return <DashboardSkeleton />;
-    }
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <div className="space-y-8">
@@ -52,69 +44,18 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <StatCard
-                    title="Total Users"
-                    value={stats.users}
-                    icon={<Users className="h-6 w-6" />}
-                />
-                <StatCard
-                    title="Total Products"
-                    value={stats.products}
-                    icon={<Package className="h-6 w-6" />}
-                />
-                <StatCard
-                    title="Total Orders"
-                    value={stats.orders}
-                    icon={<ShoppingCart className="h-6 w-6" />}
-                />
+                <StatCard title="Total Users" value={stats.users} icon={<Users />} />
+                <StatCard title="Total Products" value={stats.products} icon={<Package />} />
+                <StatCard title="Total Orders" value={stats.orders} icon={<ShoppingCart />} />
             </div>
 
             <div>
-                <h2 className="text-xl font-semibold mb-4">
-                    Quick Actions
-                </h2>
-
+                <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <ActionCard
-                        title="Manage Users"
-                        description="View and control users"
-                        icon={<Users />}
-                        href="/admin/users"
-                    />
-                    <ActionCard
-                        title="Manage Products"
-                        description="Add, edit or hide products"
-                        icon={<Package />}
-                        href="/admin/products"
-                    />
-                    <ActionCard
-                        title="View Orders"
-                        description="Process customer orders"
-                        icon={<ClipboardList />}
-                        href="/admin/orders"
-                    />
-                    <ActionCard
-                        title="Add Product"
-                        description="Create a new product"
-                        icon={<PlusCircle />}
-                        href="/admin/products/new"
-                    />
-                </div>
-            </div>
-
-            <div>
-                <h2 className="text-xl font-semibold mb-3">
-                    Recent Orders
-                </h2>
-
-                <div className="border rounded-lg p-4 text-gray-600">
-                    <p>No recent orders found.</p>
-                    <Link
-                        href="/admin/orders"
-                        className="text-black font-medium mt-2 inline-block"
-                    >
-                        View all orders →
-                    </Link>
+                    <ActionCard title="Manage Users" icon={<Users />} href="/admin/users" />
+                    <ActionCard title="Manage Products" icon={<Package />} href="/admin/products" />
+                    <ActionCard title="View Orders" icon={<ClipboardList />} href="/admin/orders" />
+                    <ActionCard title="Add Product" icon={<PlusCircle />} href="/admin/products/new" />
                 </div>
             </div>
         </div>
@@ -124,9 +65,7 @@ export default function AdminDashboard() {
 function StatCard({ title, value, icon }) {
     return (
         <div className="border rounded-lg p-4 flex items-center gap-4">
-            <div className="p-3 bg-gray-100 rounded-lg">
-                {icon}
-            </div>
+            <div className="p-3 bg-gray-100 rounded-lg">{icon}</div>
             <div>
                 <p className="text-sm text-gray-500">{title}</p>
                 <h3 className="text-2xl font-bold">{value}</h3>
@@ -135,21 +74,14 @@ function StatCard({ title, value, icon }) {
     );
 }
 
-function ActionCard({ title, description, icon, href }) {
+function ActionCard({ title, icon, href }) {
     return (
         <Link
             href={href}
-            className="border rounded-lg p-5 hover:shadow-md transition group"
+            className="border rounded-lg p-5 hover:shadow-md transition flex items-center gap-4"
         >
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-100 rounded-lg group-hover:bg-black group-hover:text-white transition">
-                    {icon}
-                </div>
-                <div>
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="text-sm text-gray-600">{description}</p>
-                </div>
-            </div>
+            <div className="p-3 bg-gray-100 rounded-lg">{icon}</div>
+            <h3 className="font-semibold">{title}</h3>
         </Link>
     );
 }

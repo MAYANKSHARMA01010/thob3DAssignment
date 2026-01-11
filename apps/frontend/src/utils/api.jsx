@@ -8,7 +8,7 @@ export const getBaseUrl = () => {
               process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
     if (!backendUrl) {
-        console.warn("⚠️ Backend URL not configured. API calls will fail.");
+        console.warn("Backend URL not configured");
         return null;
     }
 
@@ -60,7 +60,6 @@ api.interceptors.response.use(
                 window.location.href = "/login";
             }
         }
-
         return Promise.reject(error);
     }
 );
@@ -76,4 +75,15 @@ export const authAPI = {
             window.location.href = "/login";
         }
     },
+};
+
+export const productAPI = {
+    getProducts: () => api.get("/products"),
+    getProductById: (id) => api.get(`/products/${id}`),
+    getAllProductsAdmin: () => api.get("/products/admin/all"),
+    createProduct: (data) => api.post("/products", data),
+    updateProduct: (id, data) => api.put(`/products/${id}`, data),
+    deleteProduct: (id) => api.delete(`/products/${id}`),
+    toggleVisibility: (id) =>
+        api.patch(`/products/${id}/visibility`),
 };

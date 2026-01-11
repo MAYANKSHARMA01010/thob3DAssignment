@@ -78,7 +78,8 @@ export const authAPI = {
 };
 
 export const productAPI = {
-    getProducts: () => api.get("/products"),
+    getProducts: (page = 1, limit = 20) =>
+        api.get(`/products?page=${page}&limit=${limit}`),
     getProductById: (id) => api.get(`/products/${id}`),
     getAllProductsAdmin: () => api.get("/products/admin/all"),
     createProduct: (data) => api.post("/products", data),

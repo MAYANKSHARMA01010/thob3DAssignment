@@ -42,11 +42,11 @@ export default function Navbar() {
 
                 {isLoggedIn && !isAdmin && (
                     <>
-                        <NavItem href="/dashboard" icon={<LayoutDashboard size={16} />} label="Dashboard" active={isActive("/dashboard")} />
-                        <NavItem href="/products" icon={<ShoppingBag size={16} />} label="Products" active={isActive("/products")} />
-                        <NavItem href="/cart" icon={<ShoppingCart size={16} />} label="Cart" active={isActive("/cart")} />
-                        <NavItem href="/orders" icon={<Package size={16} />} label="Orders" active={isActive("/orders")} />
-                        <NavItem href="/profile" icon={<User size={16} />} label="Profile" active={isActive("/profile")} />
+                        <NavItem href="/user/dashboard" icon={<LayoutDashboard size={16} />} label="Dashboard" active={isActive("/user/dashboard")} />
+                        <NavItem href="/user/products" icon={<ShoppingBag size={16} />} label="Products" active={isActive("/user/products")} />
+                        <NavItem href="/user/cart" icon={<ShoppingCart size={16} />} label="Cart" active={isActive("/user/cart")} />
+                        <NavItem href="/user/orders" icon={<Package size={16} />} label="Orders" active={isActive("/user/orders")} />
+                        <NavItem href="/user/profile" icon={<User size={16} />} label="Profile" active={isActive("/user/profile")} />
                     </>
                 )}
 

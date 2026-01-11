@@ -101,12 +101,31 @@ const getAllProductsAdmin = async (req, res) => {
 
 const getVisibleProducts = async (req, res) => {
     try {
-        const products = await prisma.product.findMany({
-            where: { isVisible: true },
-            orderBy: { createdAt: "desc" },
-        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
 
-        res.json(products);
+        const [products, total] = await Promise.all([
+            prisma.product.findMany({
+                where: { isVisible: true },
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: limit,
+            }),
+            prisma.product.count({
+                where: { isVisible: true },
+            }),
+        ]);
+
+        res.json({
+            data: products,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

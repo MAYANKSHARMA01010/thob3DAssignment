@@ -20,6 +20,16 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum Category {
+  BOOKS
+  CLOTHING
+  ELECTRONICS
+  ACCESSORIES
+  FOOTWEAR
+  HOME
+  STATIONERY
+}
+
 model User {
   id        String    @id @default(uuid())
   name      String
@@ -37,6 +47,8 @@ model Product {
   name           String
   description    String?
   price          Decimal    @db.Decimal(10, 2)
+  imageUrl       String
+  category       Category
   stockQuantity  Int
   isVisible      Boolean    @default(true)
   createdById    String

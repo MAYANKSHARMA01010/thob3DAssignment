@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "build": "pnpm prisma generate",
     "start": "node src/server.js",

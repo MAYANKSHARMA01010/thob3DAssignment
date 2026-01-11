@@ -2,6 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { orderAPI } from "@/utils/api";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Package, Clock, ShieldCheck, Truck, XCircle, CheckCircle, Search } from "lucide-react";
 
 const STATUS_OPTIONS = [
     "ALL",
@@ -11,6 +20,28 @@ const STATUS_OPTIONS = [
     "DELIVERED",
     "CANCELLED",
 ];
+
+const getStatusVariant = (status) => {
+    switch (status) {
+        case 'DELIVERED': return 'success';
+        case 'SHIPPED': return 'default'; // Using default (blue-ish) for shipped
+        case 'CONFIRMED': return 'default';
+        case 'PENDING': return 'warning';
+        case 'CANCELLED': return 'destructive';
+        default: return 'secondary';
+    }
+};
+
+const getStatusIcon = (status) => {
+    switch (status) {
+        case 'DELIVERED': return <ShieldCheck size={16} className="mr-1" />;
+        case 'SHIPPED': return <Truck size={16} className="mr-1" />;
+        case 'CONFIRMED': return <CheckCircle size={16} className="mr-1" />;
+        case 'PENDING': return <Clock size={16} className="mr-1" />;
+        case 'CANCELLED': return <XCircle size={16} className="mr-1" />;
+        default: return null;
+    }
+};
 
 export default function UserOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -52,50 +83,49 @@ export default function UserOrdersPage() {
 
     if (loading) {
         return (
-            <p className="text-gray-400 text-center py-10">
-                Loading orders...
-            </p>
+            <div className="max-w-5xl mx-auto px-4 py-8 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-48 rounded-xl bg-[#111827]/30 border border-gray-800 animate-pulse" />
+                ))}
+            </div>
         );
     }
 
     if (orders.length === 0) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p className="text-gray-500">
-                    You have not placed any orders yet.
-                </p>
+            <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4 text-center">
+                <div className="w-20 h-20 rounded-full bg-[#111827] flex items-center justify-center border border-gray-800">
+                    <Package size={32} className="text-gray-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-white">No orders yet</h2>
+                <p className="text-gray-400">Your order history will appear here once you make a purchase.</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h1 className="text-3xl font-bold text-white">
-                    My Orders
-                </h1>
+                <div>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">My Orders</h1>
+                    <p className="text-gray-400 mt-1">Track and manage your recent purchases</p>
+                </div>
 
                 <div className="flex gap-3">
                     <select
                         value={statusFilter}
-                        onChange={(e) =>
-                            setStatusFilter(e.target.value)
-                        }
-                        className="bg-black border border-gray-800 px-3 py-2 text-sm text-white"
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-[#111827] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         {STATUS_OPTIONS.map((s) => (
-                            <option key={s} value={s}>
-                                {s}
-                            </option>
+                            <option key={s} value={s}>{s === 'ALL' ? 'All Status' : s}</option>
                         ))}
                     </select>
 
                     <select
                         value={sortOrder}
-                        onChange={(e) =>
-                            setSortOrder(e.target.value)
-                        }
-                        className="bg-black border border-gray-800 px-3 py-2 text-sm text-white"
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="bg-[#111827] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="DESC">Newest first</option>
                         <option value="ASC">Oldest first</option>
@@ -104,78 +134,65 @@ export default function UserOrdersPage() {
             </div>
 
             {filteredOrders.length === 0 ? (
-                <p className="text-gray-400">
-                    No orders match this filter.
-                </p>
+                <div className="text-center py-16 border rounded-xl border-dashed border-gray-800">
+                    <p className="text-gray-400">No orders found matching this filter.</p>
+                </div>
             ) : (
-                filteredOrders.map((order) => (
-                    <div
-                        key={order.id}
-                        className="border border-gray-800 bg-[#0f0f0f] rounded-lg p-5 space-y-4"
-                    >
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-sm text-gray-400">
-                                    Order ID
-                                </p>
-                                <p className="text-white text-sm">
-                                    {order.id}
-                                </p>
-                            </div>
-
-                            <div className="text-right">
-                                <p className="text-sm text-gray-400">
-                                    Status
-                                </p>
-                                <p className="text-white font-medium">
-                                    {order.status}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            {order.orderItems.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="flex items-center gap-4 border-t border-gray-800 pt-3"
-                                >
-                                    <img
-                                        src={item.product.imageUrl}
-                                        alt={item.product.name}
-                                        className="w-16 h-16 object-contain bg-black"
-                                    />
-
-                                    <div className="flex-1">
-                                        <p className="text-white font-medium">
-                                            {item.product.name}
-                                        </p>
-                                        <p className="text-sm text-gray-400">
-                                            Qty: {item.quantity}
-                                        </p>
+                <div className="space-y-6">
+                    {filteredOrders.map((order) => (
+                        <div
+                            key={order.id}
+                            className="group bg-[#111827]/30 border border-gray-800 hover:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
+                        >
+                            {/* Order Header */}
+                            <div className="p-4 sm:p-6 border-b border-gray-800 flex flex-wrap justify-between items-center bg-[#111827]/50 gap-4">
+                                <div className="space-y-1">
+                                    <div className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
+                                        Order ID: <span className="font-mono text-gray-300">{order.id}</span>
                                     </div>
-
-                                    <p className="text-white">
-                                        ₹
-                                        {Number(
-                                            item.priceAtPurchase
-                                        ) * item.quantity}
-                                    </p>
+                                    <div className="text-sm text-gray-300">
+                                        Placed on {new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                                <Badge variant={getStatusVariant(order.status)} className="flex items-center">
+                                    {getStatusIcon(order.status)}
+                                    {order.status}
+                                </Badge>
+                            </div>
 
-                        <div className="flex justify-between items-center border-t border-gray-800 pt-4">
-                            <p className="text-sm text-gray-400">
-                                {new Date(
-                                    order.createdAt
-                                ).toLocaleDateString()}
-                            </p>
-                            <p className="text-xl font-bold text-white">
-                                ₹{order.totalAmount}
-                            </p>
+                            {/* Order Items */}
+                            <div className="p-4 sm:p-6 space-y-4">
+                                {order.orderItems.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center gap-4"
+                                    >
+                                        <div className="h-16 w-16 bg-white/5 rounded-lg p-2 flex items-center justify-center border border-gray-800">
+                                            <img
+                                                src={item.product.imageUrl || '/placeholder.png'}
+                                                alt={item.product.name}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+
+                                        <div className="flex-1">
+                                            <h4 className="font-medium text-white">{item.product.name}</h4>
+                                            <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
+                                        </div>
+
+                                        <p className="font-medium text-white">₹{Number(item.priceAtPurchase) * item.quantity}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Order Footer */}
+                            <div className="p-4 sm:p-6 bg-[#111827]/30 border-t border-gray-800 flex justify-between items-center">
+                                <span className="text-sm text-gray-400 font-medium">Total Amount</span>
+                                <span className="text-xl font-bold text-white">₹{order.totalAmount}</span>
+                            </div>
                         </div>
-                    </div>
-                ))
+                    ))}
+                </div>
             )}
         </div>
     );

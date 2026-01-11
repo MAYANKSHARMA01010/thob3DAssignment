@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
 
         if (redirect && typeof window !== "undefined") {
-            window.location.href = "/login";
+            window.location.href = "/";
         }
     };
 

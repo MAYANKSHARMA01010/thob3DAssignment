@@ -7,24 +7,37 @@ import { toast } from "react-hot-toast";
 
 const CartContext = createContext(null);
 
+import { useAuth } from "@/context/AuthContext";
+
 export function CartProvider({ children }) {
     const [state, dispatch] = useReducer(cartReducer, cartInitialState);
+    const { isLoggedIn } = useAuth();
 
     useEffect(() => {
-        cartAPI.getCart().then((res) => {
-            const items =
-                res?.data?.items?.map((item) => ({
-                    id: item.product.id,
-                    name: item.product.name,
-                    price: Number(item.product.price),
-                    image: item.product.imageUrl,
-                    stock: item.product.stockQuantity,
-                    quantity: item.quantity,
-                })) || [];
+        if (!isLoggedIn) {
+            dispatch({ type: "SET_CART", payload: [] });
+            return;
+        }
 
-            dispatch({ type: "SET_CART", payload: items });
-        });
-    }, []);
+        cartAPI
+            .getCart()
+            .then((res) => {
+                const items =
+                    res?.data?.items?.map((item) => ({
+                        id: item.product.id,
+                        name: item.product.name,
+                        price: Number(item.product.price),
+                        image: item.product.imageUrl,
+                        stock: item.product.stockQuantity,
+                        quantity: item.quantity,
+                    })) || [];
+
+                dispatch({ type: "SET_CART", payload: items });
+            })
+            .catch(() => {
+                // Silently fail or handle error
+            });
+    }, [isLoggedIn]);
 
     const addToCart = async (product, quantity = 1) => {
         await cartAPI.addToCart(product.id, quantity);

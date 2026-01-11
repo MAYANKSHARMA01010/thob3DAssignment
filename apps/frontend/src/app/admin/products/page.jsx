@@ -4,6 +4,28 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { productAPI } from "@/utils/api";
 import { toast } from "react-hot-toast";
+import {
+    Search,
+    Plus,
+    Filter,
+    MoreHorizontal,
+    Edit2,
+    Trash2,
+    Eye,
+    EyeOff
+} from "lucide-react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Modal } from "@/components/ui/modal";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -90,6 +112,27 @@ export default function AdminProductsPage() {
         setShowForm(true);
     };
 
+    const handleDelete = async (id) => {
+        if (!confirm("Are you sure you want to delete this product?")) return;
+        try {
+            await productAPI.deleteProduct(id);
+            toast.success("Product deleted");
+            fetchProducts();
+        } catch (error) {
+            toast.error("Failed to delete product");
+        }
+    };
+
+    const toggleVisibility = async (p) => {
+        try {
+            await productAPI.updateProduct(p.id, { isVisible: !p.isVisible });
+            toast.success(`Product is now ${!p.isVisible ? 'visible' : 'hidden'}`);
+            fetchProducts();
+        } catch (error) {
+            toast.error("Failed to update visibility");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -99,261 +142,261 @@ export default function AdminProductsPage() {
             stockQuantity: Number(form.stockQuantity),
         };
 
-        if (editingProduct) {
-            await productAPI.updateProduct(editingProduct.id, payload);
-            toast.success("Product updated");
-        } else {
-            await productAPI.createProduct(payload);
-            toast.success("Product created");
+        try {
+            if (editingProduct) {
+                await productAPI.updateProduct(editingProduct.id, payload);
+                toast.success("Product updated");
+            } else {
+                await productAPI.createProduct(payload);
+                toast.success("Product created");
+            }
+            setShowForm(false);
+            setEditingProduct(null);
+            setForm(emptyForm);
+            fetchProducts();
+        } catch (error) {
+            toast.error("Operation failed");
         }
-
-        setShowForm(false);
-        setEditingProduct(null);
-        setForm(emptyForm);
-        fetchProducts();
     };
 
-    if (loading) return <p className="text-gray-400">Loading...</p>;
-
     return (
-        <div className="space-y-6 text-gray-200">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">
+                    <h1 className="text-3xl font-bold text-white tracking-tight">
                         Products
                     </h1>
-                    <p className="text-gray-400">
-                        Manage your catalog
+                    <p className="text-gray-400 mt-1">
+                        Manage your product catalog and inventory
                     </p>
                 </div>
 
-                <button
-                    onClick={openCreate}
-                    className="bg-white text-black px-4 py-2 hover:bg-gray-200 transition"
-                >
-                    + Add Product
-                </button>
+                <Button onClick={openCreate} className="gap-2">
+                    <Plus size={18} />
+                    Add Product
+                </Button>
             </div>
 
-            <div className="flex flex-wrap gap-4">
-                <input
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPage(1);
-                    }}
-                    placeholder="Search product..."
-                    className="bg-black border border-gray-800 px-3 py-2 text-sm text-white"
-                />
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-[#111827]/50 p-4 rounded-xl border border-gray-800 backdrop-blur-sm">
+                <div className="relative w-full sm:w-72">
+                    <Input
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPage(1);
+                        }}
+                        placeholder="Search products..."
+                        icon={Search}
+                        className="bg-gray-900/50"
+                    />
+                </div>
 
-                <select
-                    value={categoryFilter}
-                    onChange={(e) => {
-                        setCategoryFilter(e.target.value);
-                        setPage(1);
-                    }}
-                    className="bg-black border border-gray-800 px-3 py-2 text-sm text-white"
-                >
-                    <option value="ALL">All Categories</option>
-                    <option>BOOKS</option>
-                    <option>CLOTHING</option>
-                    <option>ELECTRONICS</option>
-                    <option>ACCESSORIES</option>
-                    <option>FOOTWEAR</option>
-                    <option>HOME</option>
-                    <option>STATIONERY</option>
-                </select>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Filter size={18} className="text-gray-400" />
+                    <select
+                        value={categoryFilter}
+                        onChange={(e) => {
+                            setCategoryFilter(e.target.value);
+                            setPage(1);
+                        }}
+                        className="bg-gray-900/50 border border-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 text-white"
+                    >
+                        <option value="ALL">All Categories</option>
+                        <option>BOOKS</option>
+                        <option>CLOTHING</option>
+                        <option>ELECTRONICS</option>
+                        <option>ACCESSORIES</option>
+                        <option>FOOTWEAR</option>
+                        <option>HOME</option>
+                        <option>STATIONERY</option>
+                    </select>
+                </div>
             </div>
 
-            <div className="border border-gray-800 rounded-lg overflow-hidden bg-[#0f0f0f]">
-                <table className="w-full text-sm">
-                    <thead className="bg-[#161616] text-gray-400">
-                        <tr>
-                            <th className="p-3 text-left">Product</th>
-                            <th className="p-3 text-center">Price</th>
-                            <th className="p-3 text-center">Stock</th>
-                            <th className="p-3 text-center">Status</th>
-                            <th className="p-3 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {paginatedProducts.map((p) => (
-                            <tr
-                                key={p.id}
-                                className="border-t border-gray-800 hover:bg-[#1a1a1a]"
-                            >
-                                <td className="p-3 text-white">
-                                    {p.name}
-                                </td>
-                                <td className="p-3 text-center">
-                                    ₹{p.price}
-                                </td>
-                                <td className="p-3 text-center">
-                                    {p.stockQuantity}
-                                </td>
-                                <td className="p-3 text-center">
-                                    {p.isVisible ? "Visible" : "Hidden"}
-                                </td>
-                                <td className="p-3">
-                                    <div className="flex gap-2 justify-center">
-                                        <button
-                                            onClick={() =>
-                                                toggleVisibility(p)
-                                            }
-                                            className="border border-gray-700 px-2 py-1 text-xs hover:bg-gray-800"
-                                        >
-                                            {p.isVisible
-                                                ? "Hide"
-                                                : "Show"}
-                                        </button>
-
-                                        <button
-                                            onClick={() => openEdit(p)}
-                                            className="border border-gray-700 px-2 py-1 text-xs hover:bg-gray-800"
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(p.id)
-                                            }
-                                            className="border border-red-800 text-red-400 px-2 py-1 text-xs hover:bg-red-900/20"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-
-                        {paginatedProducts.length === 0 && (
-                            <tr>
-                                <td
-                                    colSpan="5"
-                                    className="p-4 text-center text-gray-400"
-                                >
+            <div className="rounded-xl border border-gray-800 bg-[#111827]/50 backdrop-blur-sm overflow-hidden">
+                <Table>
+                    <TableHeader className="bg-gray-900/50">
+                        <TableRow>
+                            <TableHead className="w-[300px]">Product</TableHead>
+                            <TableHead>Category</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Stock</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-24 text-center text-gray-400">
+                                    Loading products...
+                                </TableCell>
+                            </TableRow>
+                        ) : paginatedProducts.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-24 text-center text-gray-400">
                                     No products found
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            paginatedProducts.map((p) => (
+                                <TableRow key={p.id} className="group">
+                                    <TableCell className="font-medium text-white">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-lg bg-gray-800 overflow-hidden">
+                                                <img
+                                                    src={p.imageUrl}
+                                                    alt={p.name}
+                                                    className="h-full w-full object-cover"
+                                                    onError={(e) => e.target.src = 'https://via.placeholder.com/40'}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span>{p.name}</span>
+                                                <span className="text-xs text-gray-500 truncate max-w-[200px]">{p.description}</span>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">{p.category}</Badge>
+                                    </TableCell>
+                                    <TableCell>₹{p.price}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <span>{p.stockQuantity}</span>
+                                            {p.stockQuantity < 10 && <Badge variant="warning">Low</Badge>}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={p.isVisible ? "success" : "secondary"}>
+                                            {p.isVisible ? "Visible" : "Hidden"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => toggleVisibility(p)}
+                                                title={p.isVisible ? "Hide Product" : "Show Product"}
+                                            >
+                                                {p.isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => openEdit(p)}
+                                                title="Edit Product"
+                                            >
+                                                <Edit2 size={16} />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                                onClick={() => handleDelete(p.id)}
+                                                title="Delete Product"
+                                            >
+                                                <Trash2 size={16} />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
                         )}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </div>
 
-            <div className="flex justify-center items-center gap-4">
-                <button
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="border border-gray-700 px-3 py-1 disabled:opacity-40"
-                >
-                    Prev
-                </button>
-
+            <div className="flex items-center justify-between border-t border-gray-800 pt-4">
                 <span className="text-sm text-gray-400">
                     Page {page} of {totalPages || 1}
                 </span>
-
-                <button
-                    disabled={page === totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="border border-gray-700 px-3 py-1 disabled:opacity-40"
-                >
-                    Next
-                </button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page === 1}
+                        onClick={() => setPage((p) => p - 1)}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page === totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                    >
+                        Next
+                    </Button>
+                </div>
             </div>
 
-            {showForm && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-                    <form
-                        onSubmit={handleSubmit}
-                        className="bg-[#0f0f0f] border border-gray-800 w-full max-w-lg p-6 space-y-4"
-                    >
-                        <h2 className="text-lg font-semibold text-white">
-                            {editingProduct
-                                ? "Edit Product"
-                                : "Add Product"}
-                        </h2>
-
-                        <input
-                            name="name"
-                            value={form.name}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    name: e.target.value,
-                                })
-                            }
-                            className="border border-gray-800 bg-black p-2 w-full text-white"
+            <Modal
+                isOpen={showForm}
+                onClose={() => setShowForm(false)}
+                title={editingProduct ? "Edit Product" : "Add New Product"}
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">Name</label>
+                        <Input
+                            required
                             placeholder="Product name"
-                            required
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
                         />
+                    </div>
 
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">Description</label>
                         <textarea
-                            name="description"
+                            className="flex min-h-[80px] w-full rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            placeholder="Product description"
                             value={form.description}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    description: e.target.value,
-                                })
-                            }
-                            className="border border-gray-800 bg-black p-2 w-full text-white"
-                            placeholder="Description"
+                            onChange={(e) => setForm({ ...form, description: e.target.value })}
                         />
+                    </div>
 
-                        <input
-                            name="imageUrl"
-                            value={form.imageUrl}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    imageUrl: e.target.value,
-                                })
-                            }
-                            className="border border-gray-800 bg-black p-2 w-full text-white"
-                            placeholder="Image URL"
-                            required
-                        />
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <input
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300">Price (₹)</label>
+                            <Input
+                                required
                                 type="number"
+                                placeholder="0.00"
                                 value={form.price}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        price: e.target.value,
-                                    })
-                                }
-                                className="border border-gray-800 bg-black p-2 text-white"
-                                placeholder="Price"
-                                required
-                            />
-                            <input
-                                type="number"
-                                value={form.stockQuantity}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        stockQuantity: e.target.value,
-                                    })
-                                }
-                                className="border border-gray-800 bg-black p-2 text-white"
-                                placeholder="Stock"
-                                required
+                                onChange={(e) => setForm({ ...form, price: e.target.value })}
                             />
                         </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300">Stock</label>
+                            <Input
+                                required
+                                type="number"
+                                placeholder="0"
+                                value={form.stockQuantity}
+                                onChange={(e) => setForm({ ...form, stockQuantity: e.target.value })}
+                            />
+                        </div>
+                    </div>
 
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">Image URL</label>
+                        <Input
+                            required
+                            placeholder="https://..."
+                            value={form.imageUrl}
+                            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">Category</label>
                         <select
+                            className="flex h-10 w-full rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                             value={form.category}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    category: e.target.value,
-                                })
-                            }
-                            className="border border-gray-800 bg-black p-2 w-full text-white"
+                            onChange={(e) => setForm({ ...form, category: e.target.value })}
                         >
                             <option>BOOKS</option>
                             <option>CLOTHING</option>
@@ -363,25 +406,18 @@ export default function AdminProductsPage() {
                             <option>HOME</option>
                             <option>STATIONERY</option>
                         </select>
+                    </div>
 
-                        <div className="flex justify-end gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                className="border border-gray-700 px-4 py-2 hover:bg-gray-800"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="bg-white text-black px-4 py-2 hover:bg-gray-200"
-                            >
-                                {editingProduct ? "Update" : "Create"}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
+                    <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>
+                            Cancel
+                        </Button>
+                        <Button type="submit">
+                            {editingProduct ? "Update Product" : "Create Product"}
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

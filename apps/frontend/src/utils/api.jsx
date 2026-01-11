@@ -6,7 +6,7 @@ export const getBaseUrl = () => {
         process.env.NODE_ENV === "development"
             ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
             : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
-              process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+            process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
     if (!backendUrl) return null;
 
@@ -56,7 +56,7 @@ api.interceptors.response.use(
             "Something went wrong";
 
         if (status === 401) {
-            const publicRoutes = ["/login", "/register"];
+            const publicRoutes = ["/", "/login", "/register"];
             const currentPath = window.location.pathname.toLowerCase();
 
             if (!publicRoutes.includes(currentPath)) {
@@ -64,7 +64,7 @@ api.interceptors.response.use(
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
                 setTimeout(() => {
-                    window.location.href = "/login";
+                    window.location.href = "/";
                 }, 500);
             }
         } else if (status >= 400) {
@@ -82,7 +82,7 @@ export const authAPI = {
     logout: () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        window.location.href = "/login";
+        window.location.href = "/";
     },
 };
 

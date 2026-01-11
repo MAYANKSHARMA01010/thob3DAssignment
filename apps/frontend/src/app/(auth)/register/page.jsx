@@ -4,9 +4,22 @@ import { useState } from "react";
 import { authAPI } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardFooter
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
 
 export default function Register() {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -32,37 +45,92 @@ export default function Register() {
             return;
         }
 
+        setIsLoading(true);
         try {
             await authAPI.register(form);
-            toast.success("Registration successful");
+            toast.success("Registration successful! Please login.");
             router.push("/login");
         } catch (err) {
             toast.error(err.response?.data?.ERROR || "Register failed");
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
     return (
-        <form
-            onSubmit={submit}
-            className="max-w-md mx-auto mt-20 p-6 border"
-        >
-            <h2 className="text-xl font-semibold mb-4">Register</h2>
-
-            {["name", "email", "password", "confirm_password"].map((f) => (
-                <input
-                    key={f}
-                    type={f.includes("password") ? "password" : "text"}
-                    placeholder={f.replace("_", " ")}
-                    className="w-full border p-2 mb-3"
-                    onChange={(e) =>
-                        setForm({ ...form, [f]: e.target.value })
-                    }
-                />
-            ))}
-
-            <button className="w-full bg-black text-white p-2">
-                Register
-            </button>
-        </form>
+        <Card className="border-gray-800 bg-[#111827]/80 backdrop-blur-xl animate-in fade-in zoom-in duration-500">
+            <CardHeader className="space-y-1 text-center">
+                <CardTitle className="text-2xl font-bold tracking-tight text-white">
+                    Create an account
+                </CardTitle>
+                <CardDescription>
+                    Enter your details to get started
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={submit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Input
+                            name="name"
+                            placeholder="Full Name"
+                            value={form.name}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Input
+                            name="email"
+                            type="email"
+                            placeholder="Email address"
+                            value={form.email}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Input
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            value={form.password}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Input
+                            name="confirm_password"
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={form.confirm_password}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <Button
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white"
+                        disabled={isLoading}
+                        isLoading={isLoading}
+                    >
+                        {!isLoading && <UserPlus size={18} className="mr-2" />}
+                        Create Account
+                    </Button>
+                </form>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-2 text-center text-sm text-gray-400">
+                <div>
+                    Already have an account?{" "}
+                    <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+                        Sign in
+                    </Link>
+                </div>
+            </CardFooter>
+        </Card>
     );
 }

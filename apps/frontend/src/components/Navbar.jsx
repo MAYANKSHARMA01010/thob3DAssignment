@@ -5,17 +5,13 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-hot-toast";
 import {
-    ShoppingBag,
     ShoppingCart,
-    User,
     LogOut,
     Menu,
     X,
-    Search
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils/cn";
 
 export default function Navbar() {
@@ -72,7 +68,6 @@ export default function Navbar() {
                                     <Link href="/user/cart">
                                         <Button variant="ghost" size="icon" className="relative text-gray-400 hover:text-white">
                                             <ShoppingCart size={20} />
-                                            <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 px-0 flex items-center justify-center">0</Badge>
                                         </Button>
                                     </Link>
                                 )}

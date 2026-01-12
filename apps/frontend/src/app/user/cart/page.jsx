@@ -66,7 +66,7 @@ export default function CartPage() {
                             key={item.id}
                             className="group bg-[#111827]/30 border border-gray-800 hover:border-gray-700 rounded-xl p-4 flex gap-6 items-center transition-all duration-300"
                         >
-                            <div className="h-24 w-24 bg-white/5 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
+                            <div className="h-24 w-24 bg-white/5 rounded-lg p-2 flex items-center justify-center shrink-0">
                                 <img
                                     src={item.image}
                                     alt={item.name}

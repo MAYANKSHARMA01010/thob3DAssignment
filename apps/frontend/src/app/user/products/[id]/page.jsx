@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
@@ -84,7 +85,7 @@ export default function ProductDetailsPage({ params }) {
                     <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="max-h-[500px] w-full object-contain filter drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                        className="max-h-125 w-full object-contain filter drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
                     />
                     {isOutOfStock && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
@@ -152,7 +153,7 @@ export default function ProductDetailsPage({ params }) {
                                 <label className="text-sm font-medium text-gray-400 invisible hidden sm:block">Action</label>
                                 <Button
                                     size="lg"
-                                    className="w-full h-[50px] text-lg font-semibold bg-indigo-600 hover:bg-indigo-500"
+                                    className="w-full h-12.5 text-lg font-semibold bg-indigo-600 hover:bg-indigo-500"
                                     onClick={handleAddToCart}
                                     disabled={isOutOfStock}
                                 >

@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils/cn";
 
@@ -102,7 +101,6 @@ export default function Navbar() {
 
             {isMobileMenuOpen && (
                 <div className="md:hidden border-t border-gray-800 bg-[#0B0F19] p-4 space-y-4">
-                    <Input placeholder="Search products..." icon={Search} className="bg-gray-900" />
                     {isLoggedIn && !isAdmin && (
                         <div className="flex flex-col space-y-2">
                             <MobileNavLink href="/user/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</MobileNavLink>

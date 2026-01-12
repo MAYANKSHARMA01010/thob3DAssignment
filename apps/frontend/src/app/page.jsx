@@ -37,7 +37,7 @@ export default function Home() {
                     Order & Inventory System v1.0
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-400 tracking-tight leading-tight">
+                <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-linear-to-b from-white via-white to-gray-400 tracking-tight leading-tight">
                     Manage your business <br /> with confidence.
                 </h1>
 

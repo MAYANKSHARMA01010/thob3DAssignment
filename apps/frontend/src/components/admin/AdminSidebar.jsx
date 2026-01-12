@@ -18,7 +18,7 @@ export default function AdminSidebar() {
     return (
         <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-gray-800 bg-[#0B0F19]">
             <div className="flex h-16 items-center border-b border-gray-800 px-6">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                     AdminPanel
                 </h1>
             </div>

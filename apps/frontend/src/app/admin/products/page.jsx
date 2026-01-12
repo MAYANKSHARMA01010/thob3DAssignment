@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -216,7 +217,7 @@ export default function AdminProductsPage() {
                 <Table>
                     <TableHeader className="bg-gray-900/50">
                         <TableRow>
-                            <TableHead className="w-[300px]">Product</TableHead>
+                            <TableHead className="w-75">Product</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>Price</TableHead>
                             <TableHead>Stock</TableHead>
@@ -252,7 +253,7 @@ export default function AdminProductsPage() {
                                             </div>
                                             <div className="flex flex-col">
                                                 <span>{p.name}</span>
-                                                <span className="text-xs text-gray-500 truncate max-w-[200px]">{p.description}</span>
+                                                <span className="text-xs text-gray-500 truncate max-w-50">{p.description}</span>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -350,7 +351,7 @@ export default function AdminProductsPage() {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-300">Description</label>
                         <textarea
-                            className="flex min-h-[80px] w-full rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            className="flex min-h-20 w-full rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                             placeholder="Product description"
                             value={form.description}
                             onChange={(e) => setForm({ ...form, description: e.target.value })}

@@ -2,15 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { orderAPI } from "@/utils/api";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, Clock, ShieldCheck, Truck, XCircle, CheckCircle, Search } from "lucide-react";
+import { Package, Clock, ShieldCheck, Truck, XCircle, CheckCircle } from "lucide-react";
 
 const STATUS_OPTIONS = [
     "ALL",
@@ -24,7 +17,7 @@ const STATUS_OPTIONS = [
 const getStatusVariant = (status) => {
     switch (status) {
         case 'DELIVERED': return 'success';
-        case 'SHIPPED': return 'default'; // Using default (blue-ish) for shipped
+        case 'SHIPPED': return 'default';
         case 'CONFIRMED': return 'default';
         case 'PENDING': return 'warning';
         case 'CANCELLED': return 'destructive';
@@ -144,7 +137,6 @@ export default function UserOrdersPage() {
                             key={order.id}
                             className="group bg-[#111827]/30 border border-gray-800 hover:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
                         >
-                            {/* Order Header */}
                             <div className="p-4 sm:p-6 border-b border-gray-800 flex flex-wrap justify-between items-center bg-[#111827]/50 gap-4">
                                 <div className="space-y-1">
                                     <div className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
@@ -160,7 +152,6 @@ export default function UserOrdersPage() {
                                 </Badge>
                             </div>
 
-                            {/* Order Items */}
                             <div className="p-4 sm:p-6 space-y-4">
                                 {order.orderItems.map((item) => (
                                     <div
@@ -185,7 +176,6 @@ export default function UserOrdersPage() {
                                 ))}
                             </div>
 
-                            {/* Order Footer */}
                             <div className="p-4 sm:p-6 bg-[#111827]/30 border-t border-gray-800 flex justify-between items-center">
                                 <span className="text-sm text-gray-400 font-medium">Total Amount</span>
                                 <span className="text-xl font-bold text-white">₹{order.totalAmount}</span>

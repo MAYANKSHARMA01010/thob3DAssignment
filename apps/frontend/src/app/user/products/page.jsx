@@ -5,17 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { productAPI } from "@/utils/api";
 import { useCart } from "@/context/CartContext";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, ShoppingCart, Loader2 } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
 
 const CATEGORIES = [
     "ALL",
@@ -96,7 +89,6 @@ export default function UserProductsPage() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">Products</h1>
@@ -104,7 +96,6 @@ export default function UserProductsPage() {
                 </div>
             </div>
 
-            {/* Filters */}
             <div className="sticky top-20 z-10 bg-[#0B0F19]/95 backdrop-blur-md border border-gray-800 rounded-xl p-4 shadow-xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="md:col-span-1">
@@ -149,7 +140,6 @@ export default function UserProductsPage() {
                 </div>
             </div>
 
-            {/* Content */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => <ProductSkeleton key={i} />)}
@@ -261,7 +251,6 @@ export default function UserProductsPage() {
                 </div>
             )}
 
-            {/* Pagination - Only show if we have pages */}
             {totalPages > 1 && (
                 <div className="flex justify-center gap-4 pt-8">
                     <Button

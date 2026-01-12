@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import Link from "next/link";
@@ -10,14 +11,7 @@ import {
     Package,
     User,
     ArrowRight,
-    CreditCard
 } from "lucide-react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function UserDashboard() {
@@ -69,7 +63,6 @@ export default function UserDashboard() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">
@@ -86,7 +79,6 @@ export default function UserDashboard() {
                 </Link>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <StatCard
                     title="Total Orders"
@@ -105,7 +97,6 @@ export default function UserDashboard() {
                 />
             </div>
 
-            {/* Quick Actions */}
             <div className="space-y-4">
                 <h2 className="text-xl font-bold text-white">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

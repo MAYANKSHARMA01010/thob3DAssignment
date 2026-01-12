@@ -12,7 +12,6 @@ import {
     TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -28,7 +27,7 @@ const getStatusVariant = (status) => {
     switch (status) {
         case 'DELIVERED': return 'success';
         case 'SHIPPED': return 'default';
-        case 'CONFIRMED': return 'default'; // Or 'info' if you treat default as info
+        case 'CONFIRMED': return 'default';
         case 'PENDING': return 'warning';
         case 'CANCELLED': return 'destructive';
         default: return 'secondary';

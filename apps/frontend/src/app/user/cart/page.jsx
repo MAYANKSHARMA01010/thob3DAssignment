@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useCart } from "@/context/CartContext";
@@ -5,16 +7,8 @@ import { orderAPI } from "@/utils/api";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export default function CartPage() {
     const router = useRouter();
@@ -66,7 +60,6 @@ export default function CartPage() {
             <p className="text-gray-400 mb-8">{totalItems} items in your cart</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Cart Items */}
                 <div className="lg:col-span-2 space-y-4">
                     {cart.map((item) => (
                         <div
@@ -129,7 +122,6 @@ export default function CartPage() {
                     </div>
                 </div>
 
-                {/* Summary */}
                 <div className="lg:col-span-1">
                     <div className="bg-[#111827]/50 border border-gray-800 rounded-xl p-6 sticky top-24 backdrop-blur-sm">
                         <h2 className="text-xl font-bold text-white mb-6">Order Summary</h2>

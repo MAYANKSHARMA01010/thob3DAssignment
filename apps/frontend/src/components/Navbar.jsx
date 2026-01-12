@@ -57,7 +57,6 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Right Side Actions */}
                     <div className="flex items-center gap-4">
                         {!isLoggedIn ? (
                             <div className="hidden md:flex items-center gap-2">
@@ -91,7 +90,6 @@ export default function Navbar() {
                             </div>
                         )}
 
-                        {/* Mobile Menu Button */}
                         <button
                             className="md:hidden text-gray-400 hover:text-white"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -102,7 +100,6 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="md:hidden border-t border-gray-800 bg-[#0B0F19] p-4 space-y-4">
                     <Input placeholder="Search products..." icon={Search} className="bg-gray-900" />

@@ -7,8 +7,6 @@ import AdminHeader from "@/components/admin/AdminHeader";
 
 export default function AdminLayout({ children }) {
     const { isLoggedIn, isAdmin } = useAuth();
-    // In a real app we might want to show a loading state while checking auth
-    // For now we engage the redirect logic in useEffect
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -19,7 +17,7 @@ export default function AdminLayout({ children }) {
     }, [isLoggedIn, isAdmin]);
 
     if (!isLoggedIn || !isAdmin) {
-        return null; // Or a loading spinner
+        return null;
     }
 
     return (

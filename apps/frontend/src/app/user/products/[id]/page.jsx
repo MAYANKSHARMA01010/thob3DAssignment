@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState, use } from "react";
@@ -10,9 +11,6 @@ import Link from "next/link";
 import { toast } from "react-hot-toast";
 
 export default function ProductDetailsPage({ params }) {
-    // Unwrapping params using React.use() or just accessing it if it's already available
-    // In Next.js 15+ params is a promise, but in 13/14 it's an object. 
-    // Given the project uses Next 16, params is a promise.
     const resolvedParams = use(params);
     const { id } = resolvedParams;
 
@@ -81,7 +79,6 @@ export default function ProductDetailsPage({ params }) {
             </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-                {/* Product Image */}
                 <div className="bg-[#111827]/30 border border-gray-800 rounded-2xl p-8 flex items-center justify-center relative overflow-hidden group">
                     <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <img
@@ -96,7 +93,6 @@ export default function ProductDetailsPage({ params }) {
                     )}
                 </div>
 
-                {/* Product Info */}
                 <div className="space-y-8">
                     <div>
                         <div className="flex items-center justify-between mb-4">
@@ -114,7 +110,6 @@ export default function ProductDetailsPage({ params }) {
                         </h1>
                         <div className="mt-4 flex items-end gap-4">
                             <span className="text-4xl font-bold text-white">₹{product.price}</span>
-                            {/* Mock original price for effect */}
                             <span className="text-xl text-gray-500 line-through mb-1">
                                 ₹{Math.round(product.price * 1.2)}
                             </span>
@@ -130,10 +125,8 @@ export default function ProductDetailsPage({ params }) {
                         </p>
                     </div>
 
-                    {/* Actions */}
                     <div className="space-y-6">
                         <div className="flex flex-col sm:flex-row gap-6">
-                            {/* Quantity Selector */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-gray-400">Quantity</label>
                                 <div className="flex items-center bg-[#111827] border border-gray-700 rounded-lg p-1 w-fit">
@@ -155,7 +148,6 @@ export default function ProductDetailsPage({ params }) {
                                 </div>
                             </div>
 
-                            {/* Add to Cart Button */}
                             <div className="flex-1 flex flex-col gap-2">
                                 <label className="text-sm font-medium text-gray-400 invisible hidden sm:block">Action</label>
                                 <Button
@@ -170,7 +162,6 @@ export default function ProductDetailsPage({ params }) {
                             </div>
                         </div>
 
-                        {/* Features / Trust Badges */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
                             <div className="flex items-center gap-3 text-sm text-gray-400">
                                 <div className="p-2 bg-gray-800/50 rounded-full text-indigo-400">

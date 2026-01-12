@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authAPI } from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -12,18 +13,31 @@ import {
     CardHeader,
     CardTitle,
     CardDescription,
-    CardFooter
+    CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { LogIn, ArrowRight } from "lucide-react";
+import { LogIn } from "lucide-react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+
+    const { login, isLoggedIn, isAdmin, loading } = useAuth();
     const router = useRouter();
+
+    useEffect(() => {
+        if (loading) return;
+
+        if (isLoggedIn) {
+            router.replace(
+                isAdmin ? "/admin/dashboard" : "/user/dashboard"
+            );
+        }
+    }, [isLoggedIn, isAdmin, loading, router]);
+
+    if (loading || isLoggedIn) return null;
 
     const submit = async (e) => {
         e.preventDefault();
@@ -40,7 +54,7 @@ export default function Login() {
 
             toast.success("Login successful");
 
-            router.push(
+            router.replace(
                 res.data.user.role === "ADMIN"
                     ? "/admin/dashboard"
                     : "/user/dashboard"
@@ -55,36 +69,33 @@ export default function Login() {
     return (
         <Card className="border-gray-800 bg-[#111827]/80 backdrop-blur-xl animate-in fade-in zoom-in duration-500">
             <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-2xl font-bold tracking-tight text-white">
+                <CardTitle className="text-2xl font-bold text-white">
                     Welcome back
                 </CardTitle>
                 <CardDescription>
                     Enter your credentials to access your account
                 </CardDescription>
             </CardHeader>
+
             <CardContent>
                 <form onSubmit={submit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Input
-                            type="email"
-                            placeholder="Email address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isLoading}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            disabled={isLoading}
-                        />
-                    </div>
+                    <Input
+                        type="email"
+                        placeholder="Email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
+                    />
+                    <Input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
+                    />
                     <Button
                         type="submit"
-                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white"
+                        className="w-full bg-indigo-600 hover:bg-indigo-500"
                         disabled={isLoading}
                         isLoading={isLoading}
                     >
@@ -93,13 +104,17 @@ export default function Login() {
                     </Button>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-2 text-center text-sm text-gray-400">
-                <div>
+
+            <CardFooter className="text-center text-sm text-gray-400">
+                <span>
                     Don't have an account?{" "}
-                    <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+                    <Link
+                        href="/register"
+                        className="text-indigo-400 hover:text-indigo-300 font-medium"
+                    >
                         Register
                     </Link>
-                </div>
+                </span>
             </CardFooter>
         </Card>
     );

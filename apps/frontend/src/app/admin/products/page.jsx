@@ -8,7 +8,6 @@ import {
     Search,
     Plus,
     Filter,
-    MoreHorizontal,
     Edit2,
     Trash2,
     Eye,
